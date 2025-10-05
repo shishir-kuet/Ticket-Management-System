@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -44,5 +45,47 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // User role methods
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isAgent()
+    {
+        return $this->role === 'agent';
+    }
+
+    public function isCustomer()
+    {
+        return $this->role === 'customer';
+    }
+
+    // Relationships
+    public function tickets()
+    {
+        return $this->createdTickets(); // Alias for backward compatibility
+    }
+
+    public function createdTickets()
+    {
+        return $this->hasMany(Ticket::class, 'customer_id');
+    }
+
+    public function assignedTickets()
+    {
+        return $this->hasMany(Ticket::class, 'agent_id');
+    }
+
+    public function comments()
+    {
+        return $this->ticketComments(); // Alias for backward compatibility
+    }
+
+    public function ticketComments()
+    {
+        return $this->hasMany(TicketComment::class);
     }
 }
