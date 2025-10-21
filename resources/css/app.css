@@ -7,14 +7,15 @@ body {
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
   line-height: 1.6;
   scroll-behavior: smooth;
-  background: #f8fafc;
+  background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 25%, #dbeafe 75%, #e0e7ff 100%);
+  background-attachment: fixed;
   position: relative;
 }
 
 body.resolve-ai-homepage {
   min-height: 100vh;
-  background: #f8fafc;
-  position: relative;
+  background: #000000;
+  background-attachment: fixed;
 }
 
 body::before {
@@ -288,7 +289,7 @@ body::before {
 }
 
 .text-muted {
-  color: #6b7280;
+  color: #000 !important;
 }
 
 /* Feature Components */
@@ -514,6 +515,8 @@ body::before {
 }
 
 /* Dark mode */
+
+
 @media (prefers-color-scheme: dark) {
   body {
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #1f2937 75%, #111827 100%);
@@ -619,7 +622,8 @@ body::before {
 /* Dashboard Styles */
 .resolve-ai-dashboard {
   min-height: 100vh;
-  background: #f8fafc;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background-attachment: fixed;
 }
 
 .dashboard-main {
@@ -640,11 +644,12 @@ body::before {
 }
 
 .stat-card {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 0.75rem;
   padding: 1.5rem;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -704,10 +709,11 @@ body::before {
 }
 
 .admin-section {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 0.75rem;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   overflow: hidden;
 }
 
