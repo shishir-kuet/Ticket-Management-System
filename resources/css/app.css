@@ -12,7 +12,8 @@ body {
   position: relative;
 }
 
-body.resolve-ai-homepage {
+body.resolve-ai-homepage,
+body.resolve-ai-dashboard {
   min-height: 100vh;
   background: #000000;
   background-attachment: fixed;
