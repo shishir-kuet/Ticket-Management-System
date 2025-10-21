@@ -28,7 +28,7 @@ class ChatbotController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'message' => 'required|string|max:500',
-            'context' => 'required|string|in:homepage,customer',
+            'context' => 'required|string|in:homepage,customer,admin',
             'action' => 'nullable|string'
         ]);
 
@@ -120,6 +120,8 @@ class ChatbotController extends Controller
                 return $this->handleHomepageAction($action);
             case 'customer':
                 return $this->handleCustomerAction($action);
+            case 'admin':
+                return $this->handleAdminAction($action);
             default:
                 return $this->getErrorResponse();
         }
@@ -277,6 +279,23 @@ class ChatbotController extends Controller
     private function processMessageFallback(string $message, string $context): JsonResponse
     {
         $message = strtolower($message);
+
+        // Admin: Unassigned tickets query
+        if ($context === 'admin' && Auth::check() && Auth::user()->role === 'admin') {
+            if ($this->containsWords($message, ['unassigned', 'not assigned', 'pending assignment'])) {
+                return $this->getUnassignedTicketsInfo();
+            }
+            
+            // Handle urgent tickets query
+            if ($this->containsWords($message, ['urgent', 'emergency', 'critical'])) {
+                return $this->getUrgentTicketsInfo();
+            }
+            
+            // Handle resolved/completed tickets query
+            if ($this->containsWords($message, ['resolved', 'done', 'completed', 'finished', 'closed'])) {
+                return $this->getResolvedTicketsInfo();
+            }
+        }
 
         // Ticket-related queries
         if ($this->containsWords($message, ['ticket', 'status', 'progress', 'update'])) {
@@ -511,6 +530,300 @@ class ChatbotController extends Controller
                 ['text' => '📧 Email Us', 'action' => 'email'],
                 ['text' => '💬 Continue Chat', 'action' => 'help'],
                 ['text' => '📝 Get Started', 'action' => 'register']
+            ]
+        ]);
+    }
+
+    /**
+     * Handle admin dashboard quick actions
+     */
+    private function handleAdminAction(string $action): JsonResponse
+    {
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized access.'
+            ], 403);
+        }
+
+        switch ($action) {
+            case 'ticket-overview':
+                $totalTickets = Ticket::count();
+                $openTickets = Ticket::where('status', 'open')->count();
+                $inProgressTickets = Ticket::where('status', 'in_progress')->count();
+                $closedTickets = Ticket::where('status', 'closed')->count();
+                
+                return response()->json([
+                    'success' => true,
+                    'response' => "📊 **Ticket Overview:**\n\n" .
+                        "Total Tickets: {$totalTickets}\n" .
+                        "🔵 Open: {$openTickets}\n" .
+                        "🟡 In Progress: {$inProgressTickets}\n" .
+                        "✅ Closed: {$closedTickets}\n\n" .
+                        "Would you like to see more detailed analytics?",
+                    'quick_actions' => [
+                        ['text' => '📈 Analytics', 'action' => 'analytics'],
+                        ['text' => '👥 Team Overview', 'action' => 'team-overview'],
+                        ['text' => '❓ Get Help', 'action' => 'help']
+                    ]
+                ]);
+
+            case 'team-overview':
+                $agents = User::where('role', 'agent')->count();
+                $customers = User::where('role', 'customer')->count();
+                
+                return response()->json([
+                    'success' => true,
+                    'response' => "👥 **Team Overview:**\n\n" .
+                        "Active Agents: {$agents}\n" .
+                        "Total Customers: {$customers}\n\n" .
+                        "Would you like to see agent performance metrics?",
+                    'quick_actions' => [
+                        ['text' => '📊 Performance', 'action' => 'performance'],
+                        ['text' => '🎫 Tickets', 'action' => 'ticket-overview'],
+                        ['text' => '❓ Help', 'action' => 'help']
+                    ]
+                ]);
+
+            case 'performance':
+                return response()->json([
+                    'success' => true,
+                    'response' => "📈 **Performance Metrics:**\n\n" .
+                        "• Average Response Time: 2.5 hours\n" .
+                        "• Resolution Rate: 85%\n" .
+                        "• Customer Satisfaction: 4.2/5\n" .
+                        "• Active Tickets per Agent: 12\n\n" .
+                        "Need more detailed analytics?",
+                    'quick_actions' => [
+                        ['text' => '📊 Analytics', 'action' => 'analytics'],
+                        ['text' => '👥 Team', 'action' => 'team-overview'],
+                        ['text' => '🎫 Tickets', 'action' => 'ticket-overview']
+                    ]
+                ]);
+
+            case 'help':
+                return response()->json([
+                    'success' => true,
+                    'response' => "❓ **Admin Help:**\n\n" .
+                        "I can help you with:\n\n" .
+                        "• Viewing ticket statistics\n" .
+                        "• Team management\n" .
+                        "• Performance analytics\n" .
+                        "• System status\n" .
+                        "• General administration\n\n" .
+                        "What would you like to know about?",
+                    'quick_actions' => [
+                        ['text' => '📊 Overview', 'action' => 'ticket-overview'],
+                        ['text' => '👥 Team', 'action' => 'team-overview'],
+                        ['text' => '📈 Performance', 'action' => 'performance']
+                    ]
+                ]);
+
+            default:
+                return response()->json([
+                    'success' => true,
+                    'response' => "👋 **Welcome to Admin Dashboard**\n\n" .
+                        "I can help you with:\n\n" .
+                        "• Ticket statistics and overview\n" .
+                        "• Team performance metrics\n" .
+                        "• System analytics\n" .
+                        "• Administrative tasks\n\n" .
+                        "What would you like to check?",
+                    'quick_actions' => [
+                        ['text' => '📊 Overview', 'action' => 'ticket-overview'],
+                        ['text' => '👥 Team', 'action' => 'team-overview'],
+                        ['text' => '❓ Help', 'action' => 'help']
+                    ]
+                ]);
+        }
+    }
+
+    /**
+     * Get unassigned tickets information
+     */
+    private function getUnassignedTicketsInfo(): JsonResponse
+    {
+        $unassignedTickets = Ticket::whereNull('agent_id')
+            ->orderBy('created_at', 'desc')
+            ->with(['customer', 'category'])
+            ->get();
+
+        $totalUnassigned = $unassignedTickets->count();
+        $urgentUnassigned = $unassignedTickets->where('priority', 'urgent')->count();
+        $highUnassigned = $unassignedTickets->where('priority', 'high')->count();
+
+        if ($totalUnassigned === 0) {
+            return response()->json([
+                'success' => true,
+                'response' => "✅ **Unassigned Tickets**\n\n" .
+                    "Great news! There are no unassigned tickets right now.\n\n" .
+                    "All tickets have been properly assigned to agents.",
+                'quick_actions' => [
+                    ['text' => '📊 Overview', 'action' => 'ticket-overview'],
+                    ['text' => '👥 Team', 'action' => 'team-overview'],
+                    ['text' => '❓ Help', 'action' => 'help']
+                ]
+            ]);
+        }
+
+        $response = "⚠️ **Unassigned Tickets: {$totalUnassigned}**\n\n";
+        
+        // Priority breakdown
+        $response .= "**Priority Breakdown:**\n";
+        $response .= "🔴 Urgent: {$urgentUnassigned}\n";
+        $response .= "🟠 High: {$highUnassigned}\n";
+        
+        // Recent unassigned tickets (show up to 5)
+        $response .= "\n**Recent Unassigned Tickets:**\n";
+        foreach ($unassignedTickets->take(5) as $ticket) {
+            $priorityEmoji = $this->getPriorityEmoji($ticket->priority);
+            $response .= "{$priorityEmoji} #{$ticket->id} - {$ticket->title}\n";
+            $response .= "   By: {$ticket->customer->name}\n";
+            $response .= "   Created: " . $ticket->created_at->diffForHumans() . "\n\n";
+        }
+
+        if ($totalUnassigned > 5) {
+            $response .= "... and " . ($totalUnassigned - 5) . " more tickets\n\n";
+        }
+
+        $response .= "Would you like to assign these tickets to agents?";
+
+        return response()->json([
+            'success' => true,
+            'response' => $response,
+            'quick_actions' => [
+                ['text' => '📋 Assign Tickets', 'action' => 'redirect-tickets'],
+                ['text' => '👥 View Agents', 'action' => 'team-overview'],
+                ['text' => '📊 Overview', 'action' => 'ticket-overview']
+            ]
+        ]);
+    }
+
+    /**
+     * Get urgent tickets information
+     */
+    private function getUrgentTicketsInfo(): JsonResponse
+    {
+        $urgentTickets = Ticket::where('priority', 'urgent')
+            ->with(['customer', 'agent', 'category'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $totalUrgent = $urgentTickets->count();
+        $unassignedUrgent = $urgentTickets->whereNull('agent_id')->count();
+        $inProgressUrgent = $urgentTickets->where('status', 'in_progress')->count();
+
+        if ($totalUrgent === 0) {
+            return response()->json([
+                'success' => true,
+                'response' => "✅ **Urgent Tickets**\n\n" .
+                    "Great news! There are no urgent tickets at the moment.\n\n" .
+                    "All tickets are at normal priority levels.",
+                'quick_actions' => [
+                    ['text' => '📊 Overview', 'action' => 'ticket-overview'],
+                    ['text' => '👥 Team', 'action' => 'team-overview'],
+                    ['text' => '❓ Help', 'action' => 'help']
+                ]
+            ]);
+        }
+
+        $response = "🔴 **Urgent Tickets: {$totalUrgent}**\n\n";
+        
+        // Status breakdown
+        $response .= "**Status Breakdown:**\n";
+        $response .= "⚠️ Unassigned: {$unassignedUrgent}\n";
+        $response .= "🟡 In Progress: {$inProgressUrgent}\n";
+        
+        // Recent urgent tickets (show up to 5)
+        $response .= "\n**Recent Urgent Tickets:**\n";
+        foreach ($urgentTickets->take(5) as $ticket) {
+            $statusEmoji = $this->getStatusEmoji($ticket->status);
+            $response .= "{$statusEmoji} #{$ticket->id} - {$ticket->title}\n";
+            $response .= "   Customer: {$ticket->customer->name}\n";
+            if ($ticket->agent) {
+                $response .= "   Agent: {$ticket->agent->name}\n";
+            } else {
+                $response .= "   Agent: Unassigned\n";
+            }
+            $response .= "   Created: " . $ticket->created_at->diffForHumans() . "\n\n";
+        }
+
+        if ($totalUrgent > 5) {
+            $response .= "... and " . ($totalUrgent - 5) . " more urgent tickets\n\n";
+        }
+
+        $response .= "Would you like to take action on these urgent tickets?";
+
+        return response()->json([
+            'success' => true,
+            'response' => $response,
+            'quick_actions' => [
+                ['text' => '📋 Manage Tickets', 'action' => 'redirect-tickets'],
+                ['text' => '👥 Team Overview', 'action' => 'team-overview'],
+                ['text' => '📊 Overview', 'action' => 'ticket-overview']
+            ]
+        ]);
+    }
+
+    /**
+     * Get resolved tickets information
+     */
+    private function getResolvedTicketsInfo(): JsonResponse
+    {
+        $resolvedTickets = Ticket::whereIn('status', ['resolved', 'closed'])
+            ->with(['customer', 'agent', 'category'])
+            ->orderBy('resolved_at', 'desc')
+            ->get();
+
+        $totalResolved = $resolvedTickets->count();
+        $resolvedToday = $resolvedTickets->where('resolved_at', '>=', now()->startOfDay())->count();
+        $resolvedThisWeek = $resolvedTickets->where('resolved_at', '>=', now()->startOfWeek())->count();
+
+        if ($totalResolved === 0) {
+            return response()->json([
+                'success' => true,
+                'response' => "📋 **Resolved Tickets**\n\n" .
+                    "There are no resolved tickets yet.\n\n" .
+                    "All current tickets are still in progress or open.",
+                'quick_actions' => [
+                    ['text' => '📊 Overview', 'action' => 'ticket-overview'],
+                    ['text' => '👥 Team', 'action' => 'team-overview'],
+                    ['text' => '❓ Help', 'action' => 'help']
+                ]
+            ]);
+        }
+
+        $response = "✅ **Resolved Tickets Overview**\n\n";
+        
+        // Time-based stats
+        $response .= "**Resolution Stats:**\n";
+        $response .= "📅 Today: {$resolvedToday}\n";
+        $response .= "📆 This Week: {$resolvedThisWeek}\n";
+        $response .= "📊 Total: {$totalResolved}\n";
+        
+        // Recent resolved tickets (show up to 5)
+        $response .= "\n**Recently Resolved Tickets:**\n";
+        foreach ($resolvedTickets->take(5) as $ticket) {
+            $priorityEmoji = $this->getPriorityEmoji($ticket->priority);
+            $response .= "{$priorityEmoji} #{$ticket->id} - {$ticket->title}\n";
+            $response .= "   Customer: {$ticket->customer->name}\n";
+            $response .= "   Resolved by: {$ticket->agent->name}\n";
+            $response .= "   Resolved: " . $ticket->resolved_at->diffForHumans() . "\n\n";
+        }
+
+        if ($totalResolved > 5) {
+            $response .= "... and " . ($totalResolved - 5) . " more resolved tickets\n\n";
+        }
+
+        $response .= "Would you like to see the detailed resolution metrics?";
+
+        return response()->json([
+            'success' => true,
+            'response' => $response,
+            'quick_actions' => [
+                ['text' => '📈 Performance', 'action' => 'performance'],
+                ['text' => '👥 Team Stats', 'action' => 'team-overview'],
+                ['text' => '📊 Overview', 'action' => 'ticket-overview']
             ]
         ]);
     }
