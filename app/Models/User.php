@@ -64,6 +64,25 @@ class User extends Authenticatable
     }
 
     // Relationships
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    public function subscription()
+    {
+        return $this->hasOne(Subscription::class)->latest();
+    }
+
+    public function activeSubscription()
+    {
+        return $this->subscription()->whereNull('cancelled_at')
+            ->where(function ($query) {
+                $query->whereNull('ends_at')
+                    ->orWhere('ends_at', '>', now());
+            });
+    }
+
     public function tickets()
     {
         return $this->createdTickets(); // Alias for backward compatibility
