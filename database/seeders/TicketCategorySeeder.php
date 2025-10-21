@@ -30,19 +30,31 @@ class TicketCategorySeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'name' => 'Account Issues',
-                'description' => 'Login problems, password resets, and account access',
+                'name' => 'General Technical Problem',
+                'description' => 'General technical questions and troubleshooting support',
                 'is_active' => true,
             ],
             [
-                'name' => 'General Technical Support',
-                'description' => 'General technical questions and how-to inquiries',
+                'name' => 'Account & Access Issues',
+                'description' => 'Login problems, password resets, and account access issues',
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Billing & Payment',
+                'description' => 'Billing inquiries, payment issues, and subscription management',
                 'is_active' => true,
             ],
         ];
 
         foreach ($categories as $category) {
-            TicketCategory::create($category);
+            TicketCategory::updateOrCreate(
+                ['name' => $category['name']], // Find by name
+                $category // Update or create with these values
+            );
         }
+        
+        // Mark unwanted categories as inactive instead of deleting them
+        TicketCategory::whereNotIn('name', ['Hardware Issues', 'Software Issues', 'Network Problems', 'General Technical Problem', 'Account & Access Issues', 'Billing & Payment'])
+            ->update(['is_active' => false]);
     }
 }

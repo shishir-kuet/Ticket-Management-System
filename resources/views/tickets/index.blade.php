@@ -130,6 +130,14 @@
                         @if($ticket->status !== 'closed' && auth()->user()->role === 'customer')
                             <a href="{{ route('tickets.edit', $ticket) }}" class="btn btn-sm btn-primary">Edit</a>
                         @endif
+                        @if(auth()->user()->role === 'admin')
+                            <form action="{{ route('tickets.destroy', $ticket) }}" method="POST" class="d-inline" 
+                                  onsubmit="return confirm('Are you sure you want to delete this ticket? This action cannot be undone.')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -444,12 +452,16 @@
 }
 
 .empty-description {
-    color: #6b7280;
+    color: #000000 !important;
     margin: 0 0 2rem 0;
     max-width: 500px;
     margin-left: auto;
     margin-right: auto;
     line-height: 1.5;
+}
+
+.empty-state p {
+    color: #000000 !important;
 }
 
 .empty-actions {

@@ -220,6 +220,11 @@
     max-width: 400px;
     margin-left: auto;
     margin-right: auto;
+    color: #000000 !important;
+}
+
+.empty-state .text-muted {
+    color: #000000 !important;
 }
 
 @media (max-width: 768px) {

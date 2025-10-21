@@ -1,0 +1,334 @@
+================================================================================
+                    RESOLVE AI CHATBOT - PROMPTS AND RESPONSES
+================================================================================
+
+This document contains all available chatbot prompts, triggers, and their 
+corresponding responses for the Resolve AI Ticket Management System.
+
+================================================================================
+                              QUICK ACTIONS
+================================================================================
+
+HOMEPAGE CONTEXT QUICK ACTIONS:
+--------------------------------
+
+1. ACTION: "features"
+   TRIGGER: Features button click
+   RESPONSE: 
+   "🔍 **Resolve AI Features:**
+
+   • **Smart Ticket Management** - Automatically categorize and prioritize tickets
+   • **Team Collaboration** - Assign tickets to agents and track progress
+   • **Customer Portal** - Self-service options for customers
+   • **Analytics Dashboard** - Real-time insights and reporting
+   • **AI-Powered Responses** - Get intelligent suggestions for common issues
+
+   Would you like to know more about any specific feature?"
+   
+   QUICK ACTIONS: Analytics, AI Features, Get Started
+
+2. ACTION: "register"
+   TRIGGER: Register/Get Started button click
+   RESPONSE:
+   "🚀 **Ready to Get Started?**
+
+   Creating your Resolve AI account takes just 2 minutes:
+
+   • **Step 1:** Click the 'Register' button above
+   • **Step 2:** Fill in your basic information
+   • **Step 3:** Verify your email address
+   • **Step 4:** Set up your first project
+
+   You'll get immediate access to all features with our 14-day free trial. No credit card required to start!"
+   
+   QUICK ACTIONS: Go to Register, View Pricing, Contact Sales
+
+3. ACTION: "pricing"
+   TRIGGER: Pricing button click
+   RESPONSE:
+   "💰 **Resolve AI Pricing:**
+
+   We offer flexible plans to suit teams of all sizes:
+
+   🆓 **Starter** - Free
+   • Up to 50 tickets/month
+   • Basic support features
+   • Email support
+
+   ⭐ **Professional** - $29/month
+   • Unlimited tickets
+   • Advanced AI features
+   • Priority support
+   • Analytics dashboard
+
+   🚀 **Enterprise** - Custom pricing
+   • Custom integrations
+   • Dedicated support
+   • Advanced security
+
+   All plans include a 14-day free trial!"
+   
+   QUICK ACTIONS: Start Free, Contact Sales, Compare Plans
+
+4. ACTION: "contact"
+   TRIGGER: Contact button click
+   RESPONSE:
+   "📞 **Get in Touch:**
+
+   We'd love to hear from you! Here are the ways to reach us:
+
+   • **Email:** support@resolveai.com
+   • **Phone:** +1 (555) 123-4567
+   • **Live Chat:** Available 24/7 (that's me!)
+   • **Response Time:** Usually within 2 hours
+
+   For immediate assistance, I'm here to help right now!"
+   
+   QUICK ACTIONS: Email Us, Continue Chat, Get Started
+
+CUSTOMER CONTEXT QUICK ACTIONS:
+-------------------------------
+
+1. ACTION: "ticket-status"
+   TRIGGER: Check ticket status button
+   RESPONSE: Shows user's recent tickets with status, priority, and agent info
+   
+2. ACTION: "create-ticket"
+   TRIGGER: Create new ticket button
+   RESPONSE: Redirects to ticket creation page
+   
+3. ACTION: "help"
+   TRIGGER: Help button click
+   RESPONSE: Context-specific help menu
+
+================================================================================
+                          NATURAL LANGUAGE TRIGGERS
+================================================================================
+
+TICKET-RELATED QUERIES:
+-----------------------
+KEYWORDS: ticket, status, progress, update
+TRIGGERS: "What is ticketing system", "Check my tickets", "Ticket status"
+
+FOR GUESTS (Homepage):
+RESPONSE: Explains ticket management features with demo option
+
+FOR CUSTOMERS (Dashboard):
+RESPONSE: Shows actual user tickets with status and quick actions
+
+PRICING QUERIES:
+---------------
+KEYWORDS: price, cost, pricing, plan, subscription
+TRIGGERS: "How much does it cost", "What are your prices", "Pricing plans"
+
+RESPONSE:
+"💰 **Resolve AI Pricing:**
+
+We offer flexible plans to suit teams of all sizes:
+
+🆓 **Starter** - Free
+• Up to 50 tickets/month
+• Basic support features
+• Email support
+
+⭐ **Professional** - $29/month
+• Unlimited tickets
+• Advanced AI features
+• Priority support
+• Analytics dashboard
+
+🚀 **Enterprise** - Custom pricing
+• Custom integrations
+• Dedicated support
+• Advanced security
+
+All plans include a 14-day free trial!"
+
+FEATURE QUERIES:
+---------------
+KEYWORDS: feature, what can, capabilities, functions
+TRIGGERS: "What can you do", "Tell me about features", "What are your capabilities"
+
+RESPONSE: Same as "features" quick action response
+
+REGISTRATION QUERIES:
+--------------------
+KEYWORDS: register, sign up, get started, create account
+TRIGGERS: "How to register", "Sign me up", "Create account"
+
+RESPONSE: Same as "register" quick action response
+
+HELP QUERIES:
+------------
+KEYWORDS: help, support, assistance, guide
+TRIGGERS: "I need help", "Can you help me", "Support"
+
+FOR HOMEPAGE:
+RESPONSE:
+"❓ **How can I help you?**
+
+I can assist you with:
+
+• Learning about Resolve AI features
+• Guiding you through registration
+• Explaining pricing and plans
+• Connecting you with our team
+• Answering general questions
+
+What would you like to know more about?"
+
+FOR CUSTOMER DASHBOARD:
+RESPONSE:
+"❓ **Customer Support Help:**
+
+I can help you with:
+
+• Checking your ticket status
+• Creating new support tickets
+• Navigating the dashboard
+• Understanding ticket priorities
+• General platform questions
+
+What do you need help with?"
+
+CONTACT QUERIES:
+---------------
+KEYWORDS: contact, reach, talk to, speak with
+TRIGGERS: "How to contact you", "Talk to someone", "Reach support"
+
+RESPONSE: Same as "contact" quick action response
+
+================================================================================
+                           DEFAULT RESPONSES
+================================================================================
+
+HOMEPAGE DEFAULT:
+"I'd be happy to help! I can provide information about Resolve AI's features, help you get started, or answer any questions you have.
+
+What would you like to know about our ticket management system?"
+
+CUSTOMER DASHBOARD DEFAULT:
+"I'm here to help with your support needs! I can check your ticket status, help you create new tickets, or answer questions about the platform.
+
+What can I assist you with today?"
+
+================================================================================
+                            SPECIAL RESPONSES
+================================================================================
+
+TICKET STATUS (For Customers with No Tickets):
+"📋 **Your Tickets:**
+
+You don't have any tickets yet. When you create your first ticket, I'll be able to show you the status and progress here.
+
+Would you like to create a new ticket?"
+
+TICKET STATUS (For Customers with Tickets):
+Shows formatted list with:
+• Ticket ID and title
+• Status with emoji (🔵 Open, 🟡 In Progress, ✅ Closed)
+• Priority with emoji (🟢 Low, 🟡 Medium, 🟠 High, 🔴 Urgent)
+• Assigned agent name
+• Creation date
+
+TICKET FEATURES EXPLANATION:
+"🎫 **Ticket Management Features:**
+
+• **Smart Creation** - Easy ticket submission with auto-categorization
+• **Real-time Updates** - Track progress from start to resolution
+• **Priority Levels** - Urgent, High, Medium, Low prioritization
+• **Team Assignment** - Tickets routed to the right specialists
+• **Communication Hub** - Chat directly with support agents
+• **History Tracking** - Complete audit trail of all interactions
+
+Ready to experience efficient ticket management?"
+
+================================================================================
+                              ERROR RESPONSES
+================================================================================
+
+VALIDATION ERROR:
+"Invalid input provided."
+
+GENERAL ERROR:
+"Sorry, I didn't understand that. Could you please rephrase your question?"
+
+================================================================================
+                               CONTEXTS
+================================================================================
+
+1. HOMEPAGE CONTEXT:
+   - Used on the main landing page
+   - Focuses on product information and conversion
+   - Encourages registration and feature exploration
+
+2. CUSTOMER CONTEXT:
+   - Used in customer dashboard
+   - Focuses on support and ticket management
+   - Shows personalized information when user is logged in
+
+3. ADMIN_DASHBOARD CONTEXT:
+   - Used in admin dashboard (newly added)
+   - Can provide admin-specific responses and actions
+
+================================================================================
+                            TECHNICAL DETAILS
+================================================================================
+
+RESPONSE FORMAT:
+All responses are JSON objects with:
+- success: boolean
+- response: string (markdown formatted)
+- quick_actions: array of action objects
+- message: string (for errors)
+
+QUICK ACTION FORMAT:
+{
+  "text": "Display Text",
+  "action": "action_name"
+}
+
+MESSAGE PROCESSING:
+1. Check for quick actions first (fastest response)
+2. Try AI service if available (OpenAI integration)
+3. Fall back to rule-based keyword matching
+4. Return default response if no matches
+
+KEYWORD MATCHING:
+- Case insensitive
+- Uses containsWords() function
+- Checks for any keyword presence in user message
+
+================================================================================
+                              IMPLEMENTATION
+================================================================================
+
+CONTROLLER: app/Http/Controllers/ChatbotController.php
+ROUTES: routes/web.php (POST /chatbot/message)
+COMPONENT: resources/views/components/chatbot.blade.php
+STYLES: resources/css/app.css (chatbot section)
+JAVASCRIPT: resources/js/chatbot.js
+
+AI SERVICE: app/Services/AIService.php
+- Integrates with OpenAI API when available
+- Provides fallback to rule-based responses
+- Maintains conversation context
+
+RATE LIMITING: app/Http/Middleware/ChatbotRateLimit.php
+- Prevents spam and abuse
+- Configurable limits per user/IP
+
+================================================================================
+                               USAGE NOTES
+================================================================================
+
+1. Responses use markdown formatting for rich text display
+2. Emojis are used extensively for visual appeal
+3. Quick actions provide guided user flow
+4. Context switching enables different experiences
+5. Fallback system ensures reliability without AI API
+6. All responses are designed to be helpful and conversion-focused
+
+================================================================================
+                              END OF DOCUMENT
+================================================================================

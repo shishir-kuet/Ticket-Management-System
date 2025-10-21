@@ -270,7 +270,7 @@
 </div>
 
 <!-- Chatbot Integration -->
-<x-chatbot context="admin_dashboard" />
+<x-chatbot context="admin" />
 
 <style>
 /* Assignment Interface Styles */

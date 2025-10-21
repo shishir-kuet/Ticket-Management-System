@@ -37,6 +37,16 @@
             @if($ticket->status !== 'closed' && (auth()->user()->role === 'customer' && $ticket->customer_id === auth()->id()) || auth()->user()->role !== 'customer')
                 <a href="{{ route('tickets.edit', $ticket) }}" class="btn btn-primary">Edit Ticket</a>
             @endif
+            @if(auth()->user()->role === 'admin')
+                <form action="{{ route('tickets.destroy', $ticket) }}" method="POST" class="d-inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger" 
+                            onclick="return confirm('Are you sure you want to delete this ticket? This action cannot be undone.')">
+                        Delete Ticket
+                    </button>
+                </form>
+            @endif
         </div>
     </div>
 
