@@ -1,20 +1,22 @@
 @extends('layouts.app')
 
+@section('body-class', 'resolve-ai-homepage')
+
 @section('title', 'Choose Your Plan - Resolve AI')
 
 @section('content')
 <div class="subscription-page">
-    <div class="page-gradient">
-        <div class="subscription-header">
-            <h1 class="subscription-title">Choose Your Plan</h1>
-            <p class="subscription-subtitle">Select the plan that best fits your needs</p>
-            <div class="header-accent"></div>
-        </div>
+        <div class="page-gradient">
 
         <div class="container mx-auto px-4">
             <div class="max-w-3xl mx-auto px-4">
         <!-- Free Plan Section -->
-        <div class="bg-white rounded-2xl p-8 mb-8 border border-gray-200">
+        <div class="bg-white rounded-2xl p-8 mb-8 border border-gray-200 free-plan-wrapper">
+            <div class="subscription-header">
+                <h1 class="subscription-title">Choose Your Plan</h1>
+                <p class="subscription-subtitle">Select the plan that best fits your needs</p>
+                <div class="header-accent"></div>
+            </div>
             <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Start with Free</h2>
             <div class="plan-card">
             <div class="plan-header">
@@ -91,7 +93,7 @@
                     <form action="{{ route('subscription.checkout') }}" method="POST">
                         @csrf
                         <input type="hidden" name="plan" value="professional">
-                        <button type="submit" class="btn-select">Choose Professional</button>
+                        <button type="submit" class="btn-select btn-featured">Choose Professional</button>
                     </form>
                 @endif
             </div>
@@ -175,17 +177,21 @@
 /* Main Container Styles */
 .subscription-page {
     @apply min-h-screen w-full;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-    background-attachment: fixed;
+    /* keep the page container transparent so the body background image shows through */
+    background: transparent;
 }
 
 .page-gradient {
     @apply py-24 px-4;
-    background: linear-gradient(180deg, rgba(30, 41, 59, 0.3) 0%, rgba(15, 23, 42, 0.5) 100%);
+    /* subtle overlay to improve contrast over the background image */
+    background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.03) 100%);
 }
 
 .subscription-header {
-    @apply relative text-center mb-20;
+    @apply relative text-center;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 10;
 }
 
 .subscription-title {
@@ -231,6 +237,20 @@
 
 .plan-card.featured:hover {
     box-shadow: 0 25px 60px -5px rgba(59, 130, 246, 0.3);
+}
+
+/* Position subscription header over the free plan on wider screens */
+@media (min-width: 768px) {
+    .subscription-header {
+        position: absolute;
+        top: -4.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% - 4rem);
+    }
+    .free-plan-wrapper {
+        padding-top: 5.5rem;
+    }
 }
 
 .plan-badge {
@@ -311,7 +331,9 @@
 }
 
 .btn-select {
-    @apply w-full py-4 px-6 rounded-xl font-bold text-white transition-all duration-300;
+    @apply w-full py-4 px-6 font-bold text-white transition-all duration-300;
+    /* exact rectangular button */
+    border-radius: 0;
     background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
     border: none;
@@ -321,7 +343,7 @@
 }
 
 .btn-select:hover {
-    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    background: linear-gradient(135deg, #1d4ed8 0%, #153e75 100%);
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
 }
@@ -331,14 +353,16 @@
 }
 
 .btn-current {
-    @apply w-full py-4 px-6 rounded-xl font-bold cursor-default;
+    @apply w-full py-4 px-6 font-bold cursor-default;
+    border-radius: 0;
     background: #f1f5f9;
     color: #64748b;
     border: 2px solid #cbd5e1;
 }
 
 .btn-contact {
-    @apply w-full py-4 px-6 rounded-xl font-bold transition-all duration-300;
+    @apply w-full py-4 px-6 font-bold transition-all duration-300;
+    border-radius: 0;
     color: #2563eb;
     border: 2px solid #3b82f6;
     background: rgba(59, 130, 246, 0.05);
@@ -346,41 +370,102 @@
 }
 
 .btn-contact:hover {
-    background: rgba(59, 130, 246, 0.1);
-    border-color: #2563eb;
+    background: rgba(59, 130, 246, 0.12);
+    border-color: #1e40af;
 }
 
+
 .subscription-faq {
-    @apply max-w-6xl mx-auto px-4 py-20 rounded-2xl;
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-    margin-top: 3rem;
+    /* Wider FAQ container (approx max-w-3xl) */
+    max-width: 48rem; /* ~max-w-3xl */
+    margin-left: auto;
+    margin-right: auto;
+    padding: 2.5rem 2rem; /* py-10 px-8 */
+    border-radius: 1rem; /* rounded-2xl */
+    background: rgba(255,255,255,0.95);
+    box-shadow: 0 6px 20px rgba(2, 6, 23, 0.04);
+    border: 1px solid rgba(15,23,42,0.03);
+    margin-top: 1.5rem;
 }
 
 .subscription-faq h2 {
-    @apply text-4xl font-bold text-center mb-16;
-    color: #1e293b;
+    font-size: 2rem; /* text-4xl approx */
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #0f172a;
     letter-spacing: -0.02em;
 }
 
 .faq-grid {
-    @apply grid md:grid-cols-2 gap-8;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+}
+
+@media (max-width: 768px) {
+    .faq-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .faq-item {
-    @apply bg-white rounded-xl p-8 relative transition-all duration-300 hover:shadow-lg;
-    border: 2px solid #e2e8f0;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    background: #ffffff;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    position: relative;
+    transition: all 0.25s ease;
+    border: 1px solid rgba(226,232,240,0.8);
+    box-shadow: 0 6px 14px rgba(2,6,23,0.035);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
 }
 
 .faq-item:hover {
-    border-color: #3b82f6;
-    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.2);
     transform: translateY(-4px);
+    box-shadow: 0 14px 30px rgba(2,6,23,0.06);
 }
 
 .faq-icon {
-    @apply absolute -top-4 left-6 w-8 h-8 flex items-center justify-center rounded-full text-lg font-bold bg-gradient-to-r from-blue-500 to-blue-400 text-white;
+    @apply w-10 h-10 flex items-center justify-center rounded-full text-lg font-bold;
+    background: linear-gradient(90deg,#2563eb,#7c3aed);
+    color: white;
+    box-shadow: 0 6px 18px rgba(37,99,235,0.12);
+    margin-bottom: 1rem;
+}
+
+.faq-item h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-top: 0.5rem;
+}
+
+.faq-item p {
+    color: #475569;
+    margin-top: 0.5rem;
+}
+
+/* Featured button for Professional plan */
+.btn-featured {
+    background: linear-gradient(90deg, #7c3aed 0%, #2563eb 100%);
+    color: white;
+    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.18);
+    border: none;
+    transform: translateY(0);
+}
+
+.btn-featured:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 40px rgba(37, 99, 235, 0.22);
+}
+
+.btn-featured:active {
+    transform: translateY(0);
 }
 
 .faq-item h3 {

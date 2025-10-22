@@ -14,7 +14,7 @@ class SubscriptionFeaturesSeeder extends Seeder
     {
         // Free Plan Features
         $this->createFeatures('free', [
-            'ticket_limit' => '50',
+            'ticket_limit' => '10',
             'agent_limit' => '1',
             'storage' => '100MB',
             'priority_support' => 'false',
@@ -55,11 +55,10 @@ class SubscriptionFeaturesSeeder extends Seeder
     private function createFeatures(string $plan, array $features)
     {
         foreach ($features as $feature => $value) {
-            SubscriptionFeature::create([
-                'plan_name' => $plan,
-                'feature_name' => $feature,
-                'feature_value' => $value,
-            ]);
+            SubscriptionFeature::updateOrCreate(
+                ['plan_name' => $plan, 'feature_name' => $feature],
+                ['feature_value' => $value]
+            );
         }
     }
 }

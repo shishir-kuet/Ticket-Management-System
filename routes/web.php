@@ -28,8 +28,8 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-// Subscription routes
-Route::middleware(['auth'])->prefix('subscription')->name('subscription.')->group(function () {
+// Subscription routes (non-admin only)
+Route::middleware(['auth', 'prevent.admin.subscription'])->prefix('subscription')->name('subscription.')->group(function () {
     Route::get('/plans', [SubscriptionController::class, 'index'])->name('plans');
     Route::post('/checkout', [SubscriptionController::class, 'checkout'])->name('checkout');
     Route::get('/payment', [SubscriptionController::class, 'showPayment'])->name('payment');

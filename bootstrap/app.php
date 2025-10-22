@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'chatbot.rate.limit' => \App\Http\Middleware\ChatbotRateLimit::class,
+            'prevent.admin.subscription' => \App\Http\Middleware\PreventAdminSubscription::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

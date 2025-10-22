@@ -77,8 +77,22 @@ class Subscription extends Model
     public function getTicketLimit()
     {
         return match($this->plan_name) {
-            self::PLAN_FREE => 50,
+            self::PLAN_FREE => 10,
             self::PLAN_PROFESSIONAL => -1, // unlimited
+            self::PLAN_ENTERPRISE => -1,
+            default => 0
+        };
+    }
+
+    /**
+     * Return default ticket limit for a plan name (static helper).
+     * Useful when checking limits without an instance.
+     */
+    public static function defaultTicketLimitForPlan(string $planName): int
+    {
+        return match($planName) {
+            self::PLAN_FREE => 10,
+            self::PLAN_PROFESSIONAL => -1,
             self::PLAN_ENTERPRISE => -1,
             default => 0
         };

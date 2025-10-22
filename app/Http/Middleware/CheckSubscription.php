@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Models\Subscription;
 
 class CheckSubscription
 {
@@ -21,23 +22,35 @@ class CheckSubscription
                 return $next($request);
             }
 
-            // Get active subscription
+            // Get active subscription (may be null)
             $subscription = $user->activeSubscription;
-            
-            // Check if user has no subscription or only free plan
-            if (!$subscription || $subscription->plan_name === 'free') {
+
+            // Determine ticket limit for this user (from subscription if present, otherwise default free plan)
+            if ($subscription) {
+                $ticketLimit = $subscription->getTicketLimit();
+                $planName = $subscription->plan_name;
+            } else {
+                // Use fully-qualified constants to avoid resolution issues in some static analyzers
+                $planName = \App\Models\Subscription::PLAN_FREE;
+                $ticketLimit = \App\Models\Subscription::defaultTicketLimitForPlan($planName);
+            }
+
+            // Only compute usage alerts for finite (non -1) limits
+            if ($ticketLimit > 0) {
                 // Get ticket count for this month
                 $monthlyTickets = $user->createdTickets()
                     ->whereMonth('created_at', now()->month)
                     ->count();
 
-                // If approaching or exceeded free plan limit, flash upgrade message
-                if ($monthlyTickets >= 40) { // 80% of free plan limit (50)
-                    $remaining = 50 - $monthlyTickets;
+                // Compute threshold at 80% of allowed tickets
+                $threshold = (int) floor($ticketLimit * 0.8);
+
+                if ($monthlyTickets >= $threshold) {
+                    $remaining = max(0, $ticketLimit - $monthlyTickets);
                     if ($remaining > 0) {
                         session()->flash('subscription_alert', [
                             'type' => 'warning',
-                            'message' => "You have {$remaining} tickets remaining in your free plan this month. Consider upgrading to avoid service interruption."
+                            'message' => "You have {$remaining} tickets remaining in your {$planName} plan this month. Consider upgrading to avoid service interruption."
                         ]);
                     } else {
                         session()->flash('subscription_alert', [

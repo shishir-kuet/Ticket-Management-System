@@ -14,7 +14,8 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="resolve-ai-dashboard">
+    {{-- allow pages to set a body class (e.g. resolve-ai-homepage or resolve-ai-dashboard) --}}
+    <body class="@yield('body-class', 'resolve-ai-dashboard')">
         <div class="min-h-screen">
             @include('layouts.navigation')
 
